@@ -1,0 +1,15 @@
+version: '3.3'
+
+services:
+    walletscrypto:
+        container_name: walletscrypto
+        image: walletscrypto
+        build:
+            context: .
+            dockerfile: ./WalletsCrypto/Dockerfile
+        networks:
+            - wallets-crypto-net
+        restart: always
+
+networks:
+    wallets-crypto-net:

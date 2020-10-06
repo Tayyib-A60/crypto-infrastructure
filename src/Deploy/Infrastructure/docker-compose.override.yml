@@ -1,0 +1,50 @@
+version: '3.3'
+
+volumes:
+  # geth_data: {}
+  redis_data: {}
+  event_store_data: {}
+
+services:
+    rabbitmq:
+        environment:
+            - AMQP_URL=amqp://rabbitmq?connection_attempts=5&retry_delay=5
+            - RABBITMQ_DEFAULT_USER=Admin
+            - RABBITMQ_DEFAULT_PASS=Dev@12345
+
+
+    redis:
+        volumes:
+            - redis_data:/data
+
+    mongo:
+        ports:
+            - "27017:27017"
+      
+    eventstore:
+        environment: 
+            - EVENTSTORE_DEV=True
+            - EVENTSTORE_ENABLE_EXTERNAL_TCP=True
+            - EVENTSTORE_CLUSTER_SIZE=1
+            - EVENTSTORE_INT_TCP_PORT=1112
+            - EVENTSTORE_EXT_TCP_PORT=1113
+            - EVENTSTORE_INT_HTTP_PORT=2112
+            - EVENTSTORE_EXT_HTTP_PORT=2113
+            
+        ports:
+            - "2113:2113"
+            - "1113:1113"
+        volumes:
+            - event_store_data:/data
+
+    walletscrypto:
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+        ports: 
+            - "4000:4000"
+            - "4001:4001"
+        volumes:
+            - ./SSLCertificates/WalletsCrypto:/certificates/
+    bitcoin-watcher:
+        volumes:
+            - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro

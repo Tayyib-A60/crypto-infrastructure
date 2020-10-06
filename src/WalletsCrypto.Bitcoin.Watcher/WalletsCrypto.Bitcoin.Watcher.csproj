@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>dotnet-WalletsCrypto.Bitcoin.Watcher-0CC92AEA-F50C-44F8-B1D5-5F8980869DDA</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
+    <PackageReference Include="NetMQ" Version="4.0.1.4" />
+    <PackageReference Include="NLogWrapper" Version="1.0.7" />
+	<PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0-preview.7.20364.11" />
+	<PackageReference Include="NLog.Web.AspNetCore" Version="4.9.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WalletsCrypto.Common\WalletsCrypto.Common.csproj" />
+    <ProjectReference Include="..\WalletsCrypto.Infrastructure\WalletsCrypto.Infrastructure.csproj" />
+	  <ProjectReference Include="..\BitcoinLib\BitcoinLib.csproj" />
+  </ItemGroup>
+</Project>

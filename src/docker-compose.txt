@@ -1,0 +1,88 @@
+version: '3.3'
+
+services:
+    mongo:
+        container_name: mongo
+        image: mongo
+        networks:
+            - wallets-crypto-net
+        restart: always
+      
+    eventstore:
+        container_name: eventstore
+        image: eventstore/eventstore
+        command: --dev --enable-external-tcp --ext-ip=0.0.0.0 --int-ip=0.0.0.0
+        networks:
+            - wallets-crypto-net
+        restart: always
+    
+    walletscrypto:
+        container_name: walletscrypto
+        image: walletscrypto
+        build:
+            context: .
+            dockerfile: ./WalletsCrypto/Dockerfile
+        depends_on:
+            - eventstore
+            - mongo
+            - rabbitmq
+        networks:
+            - wallets-crypto-net
+        restart: always
+
+    ethereum-watcher:
+        container_name: ethereum-watcher
+        image: ethereum-watcher
+        build:
+            context: .
+            dockerfile: ./WalletsCrypto.Ethereum.Watcher/Dockerfile
+        depends_on:
+            - rabbitmq
+            - redis
+        networks:
+            - wallets-crypto-net
+        restart: always
+
+    bitcoin-watcher:
+        container_name: bitcoin-watcher
+        image: bitcoin-watcher
+        build:
+            context: .
+            dockerfile: ./WalletsCrypto.Bitcoin.Watcher/Dockerfile
+        networks:
+            - wallets-crypto-net
+        depends_on:
+            - rabbitmq
+            - redis
+        restart: always
+
+    # sqlserver:
+    #     image: "mcr.microsoft.com/mssql/server"
+    #     container_name: sqlserver
+    #     networks: 
+    #         - wallets-crypto-net
+    #     restart: always
+
+    redis:
+        image: redis:latest
+        container_name: redis
+        command: redis-server --requirepass ADMIN12345
+        restart: always
+        expose:
+            - 6379
+        ports:
+            - "6379:6379"
+        networks:
+          - wallets-crypto-net
+
+    rabbitmq:
+        image: 'rabbitmq:3.6-management-alpine'
+        container_name: rabbitmq
+        networks:
+            - wallets-crypto-net
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+
+networks:
+    wallets-crypto-net:

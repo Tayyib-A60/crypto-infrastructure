@@ -1,0 +1,169 @@
+{
+	"openapi": "3.0.2",
+	"info": {
+		"title": "Crypto API",
+		"description": "Crypto API documentation for [https://wallets.africa](https://wallets.africa). For this sample, you can use the api key `special-key` to test the authorization filters.",
+		"termsOfService": "http://swagger.io/terms/",
+		"contact": {
+			"email": "engineering@wallets.ng"
+		},
+		"license": {
+			"name": "Apache 2.0",
+			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+		},
+		"version": "1.0.4"
+	},
+	"servers": [
+		{
+			"url": "/api/v1"
+		}
+	],
+	"tags": [
+		{
+			"name": "adresses",
+			"description": "Create and manage Bitcoin and Ethereum address"
+		},
+		{
+			"name": "transactions",
+			"description": "Create and manage transactions on the Bitcoin and Ethereum blockchains"
+		}
+	],
+	"paths": {
+		"/adresses": {
+			"post": {
+				"tags": [
+					"adresses"
+				],
+				"summary": "Create a new Bitcoin or Ethereum address",
+				"description": "Create a new Bitcoin or Ethereum address",
+				"operationId": "createAddress",
+				"requestBody": {
+					"description": "Create a new Bitcoin or Ethereum address",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Address"
+							}
+						}					
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Address created successfully"
+					},
+					"400": {
+						"description": "Invalid input"
+					}
+				}
+			}
+		},
+		"/transactions": {
+			"post":{
+				"tags":[
+					"transactions"
+				],
+				"summary": "Send new transaction to Bitcoin or Ethereum blockchain",
+				"description": "Send new transaction to Bitcoin or Ethereum blockchain",
+				"operationId": "createTransaction",
+				"requestBody": {
+					"description": "Send new transaction to Bitcoin or Ethereum blockchain",
+					"content": {
+						"application/json":{
+							"schema":{
+								"$ref":"#/components/schemas/Transaction"
+							}
+						}
+					},
+					"required":true
+				},
+				"responses": {
+					"200":{
+						"description": "Transaction submitted"
+					},
+					"400":{
+						"description": "Invalid input or insufficient balance"
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"Address": {
+				"required": [
+					"user_id",
+					"address_type"
+				],
+				"type": "object",
+				"properties": {
+					"user_id": {
+						"type": "string",
+						"example": "d98fcce7-2793-45e7-aec4-480ce0e241ea",
+						"descritption": "The id of the user performing the transaction"
+					},
+					"address_type": {
+						"type": "integer",
+						"format": "int32",
+						"description": "type of address to be created",
+						"example": 1
+					}
+				}
+			},
+			"Transaction":{
+				"type":"object",
+				"properties":{
+					"user_id":{
+						"type": "string",
+						"example": "d98fcce7-2793-45e7-aec4-480ce0e241ea",
+						"descritption": "The id of the user performing the transaction"
+					},
+					"address_id": {
+						"type": "string",
+						"description": "The adress to send the coins from",
+						"example": "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy"
+					},
+					"destination_address":{
+						"type": "string",
+						"description": "The adress to send the coins to",
+						"example": "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy"
+					},
+					"transaction_amount":{
+						"type": "number",
+						"format": "double",
+						"description": "The amount of coins to be sent",
+						"example": 100.00
+					}
+				}
+
+			},
+			"ApiResponse": {
+				"type": "object",
+				"properties": {
+					"code": {
+						"type": "integer",
+						"format": "int32"
+					},
+					"type": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"requestBodies": {
+			"Address": {
+				"description": "Bitcoin or Ethereum address details to be created",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/Address"
+						}
+					}
+				}
+			}
+		}
+	}
+}
