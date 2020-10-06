@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using WalletsCrypto.Bitcoin.Watcher.Models;
 using WalletsCrypto.Common.Configuration;
 using WalletsCrypto.Infrastructure.Cache;
+using System.Configuration;
 
 namespace WalletsCrypto.Bitcoin.Watcher.BackgroundServices
 {
@@ -19,6 +20,8 @@ namespace WalletsCrypto.Bitcoin.Watcher.BackgroundServices
         private readonly ICacheStorage _cache;
         private readonly ICoinService _coinService;
         private readonly ILogger<TransactionFeeUpdater> _logger;
+        private readonly string _coinApiUrl = ConfigurationManager.AppSettings["CoinApiUrl"];
+        private readonly string _coinApiKey = ConfigurationManager.AppSettings["CoinApiKey"];
         public TransactionFeeUpdater(
             ICacheStorage cache,
             ILogger<TransactionFeeUpdater> logger)
@@ -58,7 +61,7 @@ namespace WalletsCrypto.Bitcoin.Watcher.BackgroundServices
         {
             var httpClient = new HttpClient();
 
-            HttpResponseMessage httpResponse = await httpClient.GetAsync($"https://rest.coinapi.io/v1/exchangerate/BTC/USD?apikey=A06866D6-B780-4265-A577-3AEF5870AE53").ConfigureAwait(false);
+            HttpResponseMessage httpResponse = await httpClient.GetAsync($"{_coinApiUrl}BTC/USD?apikey={_coinApiKey}").ConfigureAwait(false);
 
             return await Response<ExchangeRateResponse>(httpResponse);
         }
