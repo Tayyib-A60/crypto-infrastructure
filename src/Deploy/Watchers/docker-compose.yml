@@ -1,0 +1,25 @@
+version: '3.3'
+
+services:
+    ethereum-watcher:
+        container_name: ethereum-watcher
+        image: ethereum-watcher
+        build:
+            context: .
+            dockerfile: ./WalletsCrypto.Ethereum.Watcher/Dockerfile
+        networks:
+            - wallets-crypto-net
+        restart: always
+
+    bitcoin-watcher:
+        container_name: bitcoin-watcher
+        image: bitcoin-watcher
+        build:
+            context: .
+            dockerfile: ./WalletsCrypto.Bitcoin.Watcher/Dockerfile
+        networks:
+            - wallets-crypto-net
+        restart: always
+
+networks:
+    wallets-crypto-net:

@@ -1,0 +1,7 @@
+
+version: '3.3'
+
+services:
+    bitcoin-watcher:
+        volumes:
+            - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro

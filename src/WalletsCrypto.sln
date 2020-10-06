@@ -61,6 +61,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 		docker-compose.txt = docker-compose.txt
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Watchers", "Watchers", "{C16AEFEE-396D-4DD7-97AB-5F3B02891B6E}"
+	ProjectSection(SolutionItems) = preProject
+		Deploy\Watchers\docker-compose.override.yml = Deploy\Watchers\docker-compose.override.yml
+		Deploy\Watchers\docker-compose.yml = Deploy\Watchers\docker-compose.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -221,6 +227,7 @@ Global
 		{A0194D45-163F-40D3-B57E-C0306A1ADA15} = {C20D9D5A-B74C-4602-BA27-AD292707DC4B}
 		{A8018833-090D-4714-8A1A-1BED453EA635} = {A0C447DE-F22E-4B00-871F-FDCDF14CA83F}
 		{2C6F06FF-53EC-4113-B739-0B205026B1EF} = {A0C447DE-F22E-4B00-871F-FDCDF14CA83F}
+		{C16AEFEE-396D-4DD7-97AB-5F3B02891B6E} = {A0C447DE-F22E-4B00-871F-FDCDF14CA83F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD50CF85-282C-4201-89F6-710E403D20E4}
