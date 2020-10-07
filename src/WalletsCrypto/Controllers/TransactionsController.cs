@@ -92,16 +92,16 @@ namespace WalletsCrypto.Controllers
                 {
                     case "btc":
                         var cacheValue = await _cacheStorage.RetrieveAsync("CURRENT_BITCOIN_TRANSACTION_FEE");
-                        var transactionFee = 0.00015m;
+                        var fee = 0.00015m;
                         //var transactionFee = decimal.Parse(cacheValue);
                         //var fee = BlockchainProvider.InitializeFactories()
                         //        .ExecuteCreation(Domain.SharedKernel.CryptoCurrencyTypes.BTC)
                         //        .GetFee();
 
-                        return Ok(new { transactionFee });
+                        return Ok(new { fee });
                     case "eth":
 
-                        var fee = BlockchainProvider.InitializeFactories()
+                         fee = BlockchainProvider.InitializeFactories()
                                 .ExecuteCreation(Domain.SharedKernel.CryptoCurrencyTypes.ETH)
                                 .GetFee();
 
@@ -135,7 +135,7 @@ namespace WalletsCrypto.Controllers
            
             try
             {
-                var id = await _transactionWriter.CreateAsync(model.UserId, model.AddressId, model.DestinationAddress, model.TransactionAmount);
+                var (id, transactionHash) = await _transactionWriter.CreateAsync(model.UserId, model.AddressId, model.DestinationAddress, model.TransactionAmount);
 
                 if(id.Length < 1)
                 {
@@ -151,7 +151,7 @@ namespace WalletsCrypto.Controllers
 
                 _logger.LogDebug($"{JsonConvert.SerializeObject(transaction)}");
                 
-                return Ok(new { transaction });
+                return Ok(new { transaction, transactionHash });
             }
             catch (InsufficientBalanceException ex)
             {

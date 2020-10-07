@@ -28,6 +28,7 @@ namespace WalletsCrypto.ReadModel.WalletsCryptoDbModels
         public long CryptoWalletTransactionId { get; set; }
         public string Category { get; set; }
         public decimal TransactionFee { get; set; }
+        public string TransactionHash { get; set; }
     }
 
     public enum CryptoCurrencyType

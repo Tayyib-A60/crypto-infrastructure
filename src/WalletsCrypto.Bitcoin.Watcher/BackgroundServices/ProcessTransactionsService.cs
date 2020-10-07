@@ -71,16 +71,17 @@ namespace WalletsCrypto.Bitcoin.Watcher.BackgroundServices
                                     if (addr != null)
                                     {
                                         _logger.Debug($"Included Transaction: {JsonConvert.SerializeObject(transaction)}");
-                                        var (isChange, bookBalanceDifference) = await IsChangeTransaction(transaction.Vin, address.ToLower());
+                                        var sender = transaction.Vout.Count > 1 ? transaction.Vout[1] : null;
+                                        var (isChange, bookBalanceDifference, unTxHash) = await IsChangeTransaction(transaction.Vin, address.ToLower());
                                         if (isChange)
                                         {
                                             var index = transaction.Vout.IndexOf(outTx);
-                                            PublishBitcoinTransactionReceivedIntegrationEvent(outTx, transaction.TxId, index, true, bookBalanceDifference);
+                                            PublishBitcoinTransactionReceivedIntegrationEvent(unTxHash, outTx, sender, transaction.TxId, index, true, bookBalanceDifference);
                                         }
                                         else
                                         {
                                             var index = transaction.Vout.IndexOf(outTx);
-                                            PublishBitcoinTransactionReceivedIntegrationEvent(outTx, transaction.TxId, index);
+                                            PublishBitcoinTransactionReceivedIntegrationEvent(unTxHash, outTx, sender, transaction.TxId, index);
                                         }
                                     }
                                 }
@@ -97,27 +98,29 @@ namespace WalletsCrypto.Bitcoin.Watcher.BackgroundServices
             }
         }
 
-        public async Task<(bool, decimal)> IsChangeTransaction(List<Vin> txIns, string changeAddress)
+        public async Task<(bool, decimal, string)> IsChangeTransaction(List<Vin> txIns, string changeAddress)
         {
+            var unTxHash = String.Empty;
             foreach (var txIn in txIns)
             {
                 var cacheValue = await _cache.RetrieveAsync(txIn.TxId);
                 if (!string.IsNullOrWhiteSpace(cacheValue)
                     && cacheValue.Contains("CHANGE_TRANSACTION"))
                 {
+                    unTxHash = txIn.TxId;
                     var arr = cacheValue.Split(':');
-                    if (arr[2].ToLower() != changeAddress.ToLower()) return (false, 0.00m);
+                    if (arr[2].ToLower() != changeAddress.ToLower()) return (false, 0.00m, unTxHash);
                     var bookBalanceDifferenceString = arr[1];
                     var bookBalanceDifference = decimal.Parse(bookBalanceDifferenceString);
-                    return (true, bookBalanceDifference);
+                    return (true, bookBalanceDifference, unTxHash);
                 }
             }
-            return (false, 0.00m);
+            return (false, 0.00m, unTxHash);
         }
 
-        private void PublishBitcoinTransactionReceivedIntegrationEvent(Vout vo, string txHash, int index, bool isChange = false, decimal bookBalanceDifference = 0.0m)
+        private void PublishBitcoinTransactionReceivedIntegrationEvent(string unTxHash, Vout vo, Vout sender, string txHash, int index, bool isChange = false, decimal bookBalanceDifference = 0.0m)
         {
-            var @event = new BitcoinTransactionReceivedIntegrationEvent(vo, txHash, index, isChange, bookBalanceDifference);
+            var @event = new BitcoinTransactionReceivedIntegrationEvent(unTxHash, vo, sender, txHash, index, isChange, bookBalanceDifference);
             _eventBus.Publish(@event);
         }
     }

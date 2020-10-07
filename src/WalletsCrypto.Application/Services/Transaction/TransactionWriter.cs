@@ -70,7 +70,7 @@ namespace WalletsCrypto.Application.Services.Transaction
             await _addressWriter.AddUnspentTransactionAsync(addressId, unspentTransaction);
         }
 
-        public async Task<string> CreateAsync(string userId, string addressId, string transactionAddress, decimal transactionAmount, TransactionTypes transactionType = TransactionTypes.Debit, int? index = null, string transactionHash = null)
+        public async Task<(string, string)> CreateAsync(string userId, string addressId, string transactionAddress, decimal transactionAmount, TransactionTypes transactionType = TransactionTypes.Debit, int? index = null, string transactionHash = null)
         {
             return transactionType switch
             {
@@ -80,7 +80,7 @@ namespace WalletsCrypto.Application.Services.Transaction
             };
         }
 
-        private async Task<string> CreateCreditTransactionAsync(string userId, string addressId, string creditAddress, decimal transactionAmount, int? index = null, string transactionHash = null)
+        private async Task<(string, string)> CreateCreditTransactionAsync(string userId, string addressId, string creditAddress, decimal transactionAmount, int? index = null, string transactionHash = null)
         {
             var user = await _userRepository.GetByIdAsync(new UserId(userId));
             var address = await _addressRepository.GetByIdAsync(new AddressId(addressId));
@@ -93,10 +93,10 @@ namespace WalletsCrypto.Application.Services.Transaction
             if(index.HasValue && !string.IsNullOrWhiteSpace(transactionHash))
                 await _addressWriter.AddUnspentTransactionAsync(address.Id.IdAsStringWithoutPrefix(), new UnspentTransaction { Value = transactionAmount, Hash = transactionHash, Index = index.Value });
 
-            return transaction.Id.IdAsStringWithoutPrefix();
+            return (transaction.Id.IdAsStringWithoutPrefix(), transactionHash);
         }
 
-        private async Task<string> CreateDebitTransactionAsync(string userId, string addressId, string destinationAddress, decimal transactionAmount)
+        private async Task<(string, string)> CreateDebitTransactionAsync(string userId, string addressId, string destinationAddress, decimal transactionAmount)
         {
             var user = await _userRepository.GetByIdAsync(new UserId(userId));
             var address = await _addressRepository.GetByIdAsync(new AddressId(addressId));
@@ -150,7 +150,7 @@ namespace WalletsCrypto.Application.Services.Transaction
                 _logger.Debug($"Failed Transaction, add the following unspentTransactions {JsonConvert.SerializeObject(unspentTransactions)}");
                 await _unSpentTransactionUpdater.UpdateUnSpentTransactionToUnSpent(unspentTransactions.ToList());
                 await _addressWriter.AddUnUsedUnspentTransactions(addressId, unspentTransactions.ToList());
-                return String.Empty;
+                return (String.Empty, String.Empty);
             }
 
             _subscriber.Subscribe<TransactionCreatedEvent>(async @event => await HandleAsync(_transactionCreatedEventHandlers, @event));
@@ -159,7 +159,7 @@ namespace WalletsCrypto.Application.Services.Transaction
 
             await _addressWriter.UpdateBalanceAsync(address.Id.IdAsStringWithoutPrefix(), transaction.GetTotalTransactionAmount(), TransactionTypes.Debit);
 
-            return transaction.Id.IdAsStringWithoutPrefix();
+            return (transaction.Id.IdAsStringWithoutPrefix(), transactionHash);
         }
         public async Task HandleAsync<T>(IEnumerable<IDomainEventHandler<TransactionId, T>> handlers, T @event)
             where T : IDomainEvent<TransactionId>
