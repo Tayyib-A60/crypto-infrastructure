@@ -181,5 +181,23 @@ namespace WalletsCrypto.Controllers
                 return BadRequest(new { e.Message });
             }
         }
+
+        [HttpPost("removeKeyFromCache/{key}")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> RemoveKeyFromCache(string key)
+        {
+
+            try
+            {
+                await _transactionWriter.RemoveKeyFromCache(key);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { e.Message });
+            }
+        }
     }
 }

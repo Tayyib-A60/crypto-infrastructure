@@ -130,7 +130,15 @@ namespace WalletsCrypto.Application.Services.Transaction
                 foreach (var tx in unspentTransactions)
                 {
                     // cache for change transaction.
-                    await _cacheStorage.StoreAsync(tx.Hash, $"CHANGE_TRANSACTION:{totalToSpend}:{address.GetAddressString()}", DateTime.Now.AddDays(1), TimeSpan.FromDays(1));
+                    try
+                    {
+                        await _cacheStorage.StoreAsync(tx.Hash, $"CHANGE_TRANSACTION:{totalToSpend}:{address.GetAddressString()}", DateTime.Now.AddDays(1), TimeSpan.FromDays(1));
+
+                    }
+                    catch(Exception ex)
+                    {
+                        _logger.Debug(ex.ToString());
+                    }
                 }
             }
 
@@ -160,6 +168,18 @@ namespace WalletsCrypto.Application.Services.Transaction
             await _addressWriter.UpdateBalanceAsync(address.Id.IdAsStringWithoutPrefix(), transaction.GetTotalTransactionAmount(), TransactionTypes.Debit);
 
             return (transaction.Id.IdAsStringWithoutPrefix(), transactionHash);
+        }
+
+        public async Task RemoveKeyFromCache(string key)
+        {
+            try
+            {
+                await _cacheStorage.RemoveAsync(key);
+            }
+            catch (Exception ex)
+            {
+                _logger.Debug(ex.ToString());
+            }
         }
         public async Task HandleAsync<T>(IEnumerable<IDomainEventHandler<TransactionId, T>> handlers, T @event)
             where T : IDomainEvent<TransactionId>
