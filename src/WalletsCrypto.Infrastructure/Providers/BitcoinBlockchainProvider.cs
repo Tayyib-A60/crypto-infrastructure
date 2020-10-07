@@ -29,8 +29,10 @@ namespace WalletsCrypto.Infrastructure.Providers
         }
         public Task<string> Broadcast(Transaction transaction, Address address)
         {
+            _logger.Debug("Begin broadcast");
             var change = transaction.GetBitcoinTxIns().Sum(utx => utx.Value) - transaction.GetTotalTransactionAmount();
 
+            _logger.Debug("Got change");
 
             var rawTransactionRequest = new CreateRawTransactionRequest();
 
@@ -43,31 +45,41 @@ namespace WalletsCrypto.Infrastructure.Providers
                 });
             }
 
+            _logger.Debug("Added Txins");
+
             rawTransactionRequest.AddOutput(new CreateRawTransactionOutput
             {
                 Address = transaction.GetTransactionAddressString(),
                 Amount = transaction.GetTransactionAmount(),
             });
 
-            if(change > 0)
+            _logger.Debug("Added Txout");
+            if (change > 0)
             {
                 rawTransactionRequest.AddOutput(new CreateRawTransactionOutput
                 {
                     Address = address.GetAddressString(),
                     Amount = change
                 });
+                _logger.Debug("Added Txout if change");
             }
 
             var rawTransactionHex = _coinService.CreateRawTransaction(rawTransactionRequest);
             var privateKey = address.GetPrivateKeyString();
 
+            _logger.Debug("Got Private key");
+
             var signedRawTransactionWithPrivateKeyRequest = new SignRawTransactionWithKeyRequest(rawTransactionHex);
             signedRawTransactionWithPrivateKeyRequest.AddKey(privateKey);
 
+
             var signedRawTransactionHex = _coinService.SignRawTransactionWithKey(signedRawTransactionWithPrivateKeyRequest);
+
+            _logger.Debug("Signed trxn wt Private key");
             
             try
             {
+                _logger.Debug("About to send transaction to Network");
                 var transactionHash = _coinService.SendRawTransaction(signedRawTransactionHex.Hex, 0);
                 return Task.FromResult(transactionHash);
             }
