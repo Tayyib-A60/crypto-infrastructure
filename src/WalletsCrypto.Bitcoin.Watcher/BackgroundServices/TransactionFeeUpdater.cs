@@ -47,7 +47,7 @@ namespace WalletsCrypto.Bitcoin.Watcher.BackgroundServices
                     var exchangeRate = await GetCurrentBTCExchangeRate();
                     await _cache.StoreAsync("BITCOIN_USD_RATE", exchangeRate.rate.ToString());
 
-                    await Task.Delay(TimeSpan.FromMinutes(10));
+                    await Task.Delay(TimeSpan.FromMinutes(60));
                 }
                 catch (Exception ex)
                 {

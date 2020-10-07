@@ -104,10 +104,11 @@ namespace WalletsCrypto.Application.Handlers.IntegrationEventHandlers
                         }
                     }
 
-                    var (id, txHash) = await _transactionWriter.CreateAsync(address.UserId, address.Id, "", amount, TransactionTypes.Credit, index, transactionHash);
-
-                    _logger.Debug($"TransactionId: {id}, TransactionHash: {txHash}");
                 }
+
+                var (id, txHash) = await _transactionWriter.CreateAsync(address.UserId, address.Id, "", amount, TransactionTypes.Credit, index, transactionHash);
+
+                _logger.Debug($"TransactionId: {id}, TransactionHash: {txHash}");
             }
         }
     }

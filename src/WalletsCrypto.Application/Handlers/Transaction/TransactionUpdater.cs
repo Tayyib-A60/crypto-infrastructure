@@ -39,45 +39,45 @@ namespace WalletsCrypto.Application.Handlers.Transaction
                 TransactionFee = @event.TransactionFee is object ? @event.TransactionFee.Value + 0.00m : 0.00m
             });
 
-            if(@event.TransactionType.Type == TransactionTypes.Credit)
-            {
-                var cryptoWallet = await _walletAddressUpdater.GetCryptoWallet(@event.AddressId.IdAsStringWithoutPrefix());
+            //if(@event.TransactionType.Type == TransactionTypes.Credit)
+            //{
+            //    var cryptoWallet = await _walletAddressUpdater.GetCryptoWallet(@event.AddressId.IdAsStringWithoutPrefix());
 
-                var btcExchangeRate = await _cache.RetrieveAsync("BITCOIN_USD_RATE");
+            //    var btcExchangeRate = await _cache.RetrieveAsync("BITCOIN_USD_RATE");
 
-                if(!String.IsNullOrEmpty(cryptoWallet.Address))
-                {
-                    var created  = await _walletAddressUpdater.CreateCreditTransaction(new WalletCryptoTransaction
-                    {
-                        Amount = @event.TransactionAmount.Value + 0.0m,
-                        AmountInDollars = Decimal.Parse(btcExchangeRate) * @event.TransactionAmount.Value,
-                        AmountInNaira = 0.0m,
-                        DestinationAddress = cryptoWallet.Address,
-                        DestinationAddressId = cryptoWallet.AddressId,
-                        SourceAddressId = "",
-                        Category = "BTC Wallet Transfer",
-                        CurrencyType = CryptoCurrencyType.Bitcoin,
-                        CurrentBalance = cryptoWallet.AvailableBalance + @event.TransactionAmount.Value + 0.00m,
-                        PreviousBalance = cryptoWallet.AvailableBalance,
-                        DateCreated = DateTime.Now,
-                        FinalStatusTimeStamp = DateTime.Now,
-                        Status = "COMPLETED",
-                        FinalStatus = "SUCCESSFUL",
-                        Narration = "Credit from External Wallet",
-                        TransactionType = "Credit",
-                        TransactionChannel = "Bitcoin Node",
-                        TransactionReference = @event.AggregateId.IdAsStringWithoutPrefix(),
-                        WalletUserId = cryptoWallet.WalletUserId,
-                        TransactionFee = 0.0m
-                    });
+            //    if(!String.IsNullOrEmpty(cryptoWallet.Address))
+            //    {
+            //        var created  = await _walletAddressUpdater.CreateCreditTransaction(new WalletCryptoTransaction
+            //        {
+            //            Amount = @event.TransactionAmount.Value + 0.0m,
+            //            AmountInDollars = Decimal.Parse(btcExchangeRate) * @event.TransactionAmount.Value,
+            //            AmountInNaira = 0.0m,
+            //            DestinationAddress = cryptoWallet.Address,
+            //            DestinationAddressId = cryptoWallet.AddressId,
+            //            SourceAddressId = "",
+            //            Category = "BTC Wallet Transfer",
+            //            CurrencyType = CryptoCurrencyType.Bitcoin,
+            //            CurrentBalance = cryptoWallet.AvailableBalance + @event.TransactionAmount.Value + 0.00m,
+            //            PreviousBalance = cryptoWallet.AvailableBalance,
+            //            DateCreated = DateTime.Now,
+            //            FinalStatusTimeStamp = DateTime.Now,
+            //            Status = "COMPLETED",
+            //            FinalStatus = "SUCCESSFUL",
+            //            Narration = "Credit from External Wallet",
+            //            TransactionType = "Credit",
+            //            TransactionChannel = "Bitcoin Node",
+            //            TransactionReference = @event.AggregateId.IdAsStringWithoutPrefix(),
+            //            WalletUserId = cryptoWallet.WalletUserId,
+            //            TransactionFee = 0.0m
+            //        });
 
-                    if(!created)
-                    {
-                        _logger.Debug($"Failed to create credit transaction for User with UserId:{@event.UserId.IdAsStringWithoutPrefix()} Amount:{@event.TransactionAmount.Value}");
-                    }
-                }
+            //        if(!created)
+            //        {
+            //            _logger.Debug($"Failed to create credit transaction for User with UserId:{@event.UserId.IdAsStringWithoutPrefix()} Amount:{@event.TransactionAmount.Value}");
+            //        }
+            //    }
 
-            }
+            //}
 
 
         }
