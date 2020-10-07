@@ -144,14 +144,19 @@ namespace WalletsCrypto.Application.Services.Transaction
                 }
             }
 
+            _logger.Debug("Build transaction object");
             var transaction = new Domain.TransactionModule.Transaction(TransactionId.NewTransactionId(), address.Id, user.Id,
                 CryptoCurrency.NewCryptoCurrency(transactionAmount), DestinationAddress.NewDestinationAddress(destinationAddress, 
                 address.GetCryptoCurrencyType()), TransactionType.Debit, CryptoCurrency.NewCryptoCurrency(transactionFee), unspentTransactions.ToList());
-            
+
+            _logger.Debug("Done with transaction object");
+
             // broadcast transaction here....
             var transactionHash = await BlockchainProvider.InitializeFactories()
                 .ExecuteCreation(address.GetCryptoCurrencyType().Type)
                 .Broadcast(transaction, address);
+
+            _logger.Debug("Done with transaction object");
 
             _logger.Debug($"{transactionHash}");
             
