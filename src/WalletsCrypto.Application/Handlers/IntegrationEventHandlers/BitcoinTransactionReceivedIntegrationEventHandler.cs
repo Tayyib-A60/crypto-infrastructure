@@ -71,7 +71,7 @@ namespace WalletsCrypto.Application.Handlers.IntegrationEventHandlers
 
                     var btcExchangeRate = await _cache.RetrieveAsync("BITCOIN_USD_RATE");
 
-                    if (!string.IsNullOrEmpty(cryptoWallet.Address))
+                    if (!string.IsNullOrEmpty(cryptoWallet?.Address))
                     {
                         var created = await _walletAddressUpdater.CreateCreditTransaction(new WalletCryptoTransaction
                         {
@@ -84,7 +84,7 @@ namespace WalletsCrypto.Application.Handlers.IntegrationEventHandlers
                             Category = "BTC Wallet Transfer",
                             CurrencyType = CryptoCurrencyType.Bitcoin,
                             CurrentBalance = cryptoWallet.AvailableBalance + amount + 0.00m,
-                            PreviousBalance = cryptoWallet.AvailableBalance,
+                            PreviousBalance = cryptoWallet.AvailableBalance + 0.0m,
                             DateCreated = DateTime.Now,
                             FinalStatusTimeStamp = DateTime.Now,
                             Status = "COMPLETED",
