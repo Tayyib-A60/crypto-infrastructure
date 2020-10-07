@@ -132,7 +132,9 @@ namespace WalletsCrypto.Application.Services.Transaction
                     // cache for change transaction.
                     try
                     {
+                        _logger.Debug($"Adding txHash from Address: {address.GetAddressString()} to cache: {tx.Hash} ");
                         await _cacheStorage.StoreAsync(tx.Hash, $"CHANGE_TRANSACTION:{totalToSpend}:{address.GetAddressString()}", DateTime.Now.AddDays(1), TimeSpan.FromDays(1));
+                        _logger.Debug($"Added txHash {tx.Hash} to cache");
 
                     }
                     catch(Exception ex)
