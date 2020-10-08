@@ -9,7 +9,6 @@ using WalletsCrypto.Infrastructure.Cache;
 using WalletsCrypto.Infrastructure.EventBus.EventBus.Abstractions;
 using WalletsCrypto.Infrastructure.EventBus.EventBus.IntegrationEvents;
 using WalletsCrypto.Application.Handlers.Address;
-using WalletsCrypto.ReadModel;
 using WalletsCrypto.ReadModel.WalletsCryptoDbModels;
 using System;
 

@@ -148,12 +148,22 @@ namespace WalletsCrypto.Application.Services.Transaction
                 CryptoCurrency.NewCryptoCurrency(transactionAmount), DestinationAddress.NewDestinationAddress(destinationAddress, 
                 address.GetCryptoCurrencyType()), TransactionType.Debit, CryptoCurrency.NewCryptoCurrency(transactionFee), unspentTransactions.ToList());
 
+            _logger.Debug($"Transaction to broadcast: {JsonConvert.SerializeObject(transaction)}");
             // broadcast transaction here....
-            var transactionHash = await BlockchainProvider.InitializeFactories()
+            var transactionHash = String.Empty;
+            try
+            {
+                transactionHash = await BlockchainProvider.InitializeFactories()
                 .ExecuteCreation(address.GetCryptoCurrencyType().Type)
                 .Broadcast(transaction, address);
-
-            _logger.Debug("Done with transaction object");
+            } catch (Exception ex)
+            {
+                _logger.Debug($"{ex.ToString()}");
+                _logger.Debug($"Failed Transaction, add the following unspentTransactions {JsonConvert.SerializeObject(unspentTransactions)}");
+                await _unSpentTransactionUpdater.UpdateUnSpentTransactionToUnSpent(unspentTransactions.ToList());
+                await _addressWriter.AddUnUsedUnspentTransactions(addressId, unspentTransactions.ToList());
+                return (String.Empty, String.Empty);
+            }
 
             _logger.Debug($"{transactionHash}");
             
