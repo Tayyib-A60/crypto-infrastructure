@@ -35,7 +35,7 @@ namespace WalletsCrypto.Application.Handlers.Address
 
             try
             {
-                var command = new SqlCommand($"update [dbo].[CryptoCurrencyWallets] set AvailableBalance={availableBalance}, LedgerBalance={bookBalance}, HasPendingUpdate=0, DateUpdated='{DateTime.Now}' where AddressId='{addressId}'", _sqlConnection);
+                var command = new SqlCommand($"update [dbo].[CryptoCurrencyWallets] set AvailableBalance={availableBalance}, LedgerBalance={bookBalance}, DateUpdated='{DateTime.Now}' where AddressId='{addressId}'", _sqlConnection);
                 int rowsAffected = await command.ExecuteNonQueryAsync();
 
                 if (rowsAffected > 0)
@@ -62,7 +62,7 @@ namespace WalletsCrypto.Application.Handlers.Address
 
             try
             {
-                var command = new SqlCommand($"update [dbo].[CryptoWalletTransactions] set FinalStatus='SUCCESSFUL' where TransactionHash='{transactionHash}'", _sqlConnection);
+                var command = new SqlCommand($"update [dbo].[CryptoWalletTransactions] set FinalStatus='SUCCESSFUL', Status='COMPLETED', FinalStatusTimeStamp='{DateTime.Now}' where TransactionHash='{transactionHash}'", _sqlConnection);
                 int rowsAffected = await command.ExecuteNonQueryAsync();
 
                 if (rowsAffected > 0)

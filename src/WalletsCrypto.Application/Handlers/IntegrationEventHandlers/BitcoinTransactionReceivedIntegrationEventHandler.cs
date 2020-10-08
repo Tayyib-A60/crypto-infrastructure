@@ -44,11 +44,6 @@ namespace WalletsCrypto.Application.Handlers.IntegrationEventHandlers
             var bookBalanceDifference = @event.BookBalanceDifference;
             var senderAddress = new ReadModel.Address.Address();
 
-
-            if (@event.Sender != null)
-            {
-                senderAddress = await _addressReader.GetByBlockchainAddress(@event.Sender.ScriptPubKey.Addresses[0].ToLower());
-            }
             var address = await _addressReader.GetByBlockchainAddress(@event.Vout.ScriptPubKey.Addresses[0].ToLower());
 
             _logger.Debug($"{JsonConvert.SerializeObject(@event)}");
@@ -58,12 +53,22 @@ namespace WalletsCrypto.Application.Handlers.IntegrationEventHandlers
                 // need a way to get a hold of the owning transaction... 
                 await _addressWriter.UpdateBalanceAsync(address.Id, bookBalanceDifference, TransactionTypes.Debit, true);
                 await _addressWriter.AddUnspentTransactionAsync(address.Id, new UnspentTransaction { Hash = transactionHash, Index = index, Value = amount });
-                await _cache.RemoveAsync(@event.UnspentTxHash);
+                //await _cache.RemoveAsync(@event.UnspentTxHash);
                 await _walletAddressUpdater.UpdateTransactionStatus(transactionHash);
                 _logger.Debug("Unspent TX Added");
             }
             else
             {
+                var (id, txHash) = await _transactionWriter.CreateAsync(address.UserId, address.Id, "", amount, TransactionTypes.Credit, index, transactionHash);
+
+                _logger.Debug($"TransactionId: {id}, TransactionHash: {txHash}");
+
+                if (@event.Sender != null)
+                {
+                    senderAddress = await _addressReader.GetByBlockchainAddress(@event.Sender.ScriptPubKey.Addresses[0].ToLower());
+                    _logger.Debug($"Sender address: {JsonConvert.SerializeObject(senderAddress)}");
+                }
+
                 if (string.IsNullOrEmpty(senderAddress?.BlockchainAddress))
                 {
                     var cryptoWallet = await _walletAddressUpdater.GetCryptoWallet(address.Id);
@@ -104,10 +109,6 @@ namespace WalletsCrypto.Application.Handlers.IntegrationEventHandlers
                     }
 
                 }
-
-                var (id, txHash) = await _transactionWriter.CreateAsync(address.UserId, address.Id, "", amount, TransactionTypes.Credit, index, transactionHash);
-
-                _logger.Debug($"TransactionId: {id}, TransactionHash: {txHash}");
             }
         }
     }

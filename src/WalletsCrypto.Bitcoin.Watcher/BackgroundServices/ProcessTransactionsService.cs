@@ -23,19 +23,19 @@ namespace WalletsCrypto.Bitcoin.Watcher.BackgroundServices
         private readonly IEventBus _eventBus;
         private readonly ICacheStorage _cache;
         private readonly ICoinService _coinService;
-        private readonly BlockHashTransferChannel _blockHasTransferChannel;
+        private readonly BlockHashTransferChannel _blockHashTransferChannel;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
 
         public ProcessTransactionsService(
             ICacheStorage cache,
             IEventBus eventBus,
-            BlockHashTransferChannel blockHasTransferChannel
+            BlockHashTransferChannel blockHashTransferChannel
             )
         {
             _cache = cache;
             _eventBus = _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
-            _blockHasTransferChannel = blockHasTransferChannel;
+            _blockHashTransferChannel = blockHashTransferChannel;
             _coinService = new BitcoinService(ApplicationConfiguration.BitcoinNodeConfiguration.RPCUrl, 
                 ApplicationConfiguration.BitcoinNodeConfiguration.RPCUsername, 
                 ApplicationConfiguration.BitcoinNodeConfiguration.RPCPassword, 
@@ -45,7 +45,7 @@ namespace WalletsCrypto.Bitcoin.Watcher.BackgroundServices
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await foreach (var blockHash in _blockHasTransferChannel.ReadAllAsync())
+            await foreach (var blockHash in _blockHashTransferChannel.ReadAllAsync())
             {
                 try
                 {
@@ -92,7 +92,7 @@ namespace WalletsCrypto.Bitcoin.Watcher.BackgroundServices
                 catch (Exception e)
                 {
                     _logger.Debug(e.ToString());
-                    await _blockHasTransferChannel.AddBlockHashAsync(blockHash);
+                    await _blockHashTransferChannel.AddBlockHashAsync(blockHash);
                     _logger.Debug("readded to queue: " + blockHash);
                 }
             }
