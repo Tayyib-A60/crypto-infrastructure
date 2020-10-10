@@ -105,7 +105,7 @@ namespace WalletsCrypto.Application.Services.Transaction
             {
                 var cacheValue = await _cacheStorage.RetrieveAsync("CURRENT_BITCOIN_TRANSACTION_FEE");
                 //transactionFee = decimal.Parse(cacheValue);
-                transactionFee = 0.00015m;
+                transactionFee = 0.0001m;
 
                 //if (transactionFee < 0.00006m)
                 //{

@@ -12,6 +12,7 @@ using WalletsCrypto.Infrastructure.EventBus.EventBus;
 using WalletsCrypto.Infrastructure.EventBus.EventBus.Abstractions;
 using WalletsCrypto.Infrastructure.EventBus.EventBusRabbitMQ;
 using NLog.Extensions.Logging;
+
 namespace WalletsCrypto.Bitcoin.Watcher
 {
     public class Program

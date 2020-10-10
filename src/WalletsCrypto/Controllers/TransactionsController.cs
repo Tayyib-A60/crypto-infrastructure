@@ -92,7 +92,7 @@ namespace WalletsCrypto.Controllers
                 {
                     case "btc":
                         var cacheValue = await _cacheStorage.RetrieveAsync("CURRENT_BITCOIN_TRANSACTION_FEE");
-                        var fee = 0.00015m;
+                        var fee = 0.0001m;
                         //var transactionFee = decimal.Parse(cacheValue);
                         //var fee = BlockchainProvider.InitializeFactories()
                         //        .ExecuteCreation(Domain.SharedKernel.CryptoCurrencyTypes.BTC)
